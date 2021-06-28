@@ -1,0 +1,53 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sar-report
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sar-report
+  namespace: sar-report
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sar-report-anyuid-scc
+  namespace: sar-report
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:openshift:scc:anyuid
+subjects:
+- kind: ServiceAccount
+  name: sar-report
+  namespace: sar-report
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sar
+  namespace: sar-report
+  labels:
+    app: sar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sar
+  template:
+    metadata:
+      labels:
+        app: sar
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      serviceAccountName: sar-report
+      containers:
+      - name: sar
+        imagePullPolicy: Always
+        image: quay.io/mavazque/sar:latest
+        securityContext:
+          runAsUser: 0
