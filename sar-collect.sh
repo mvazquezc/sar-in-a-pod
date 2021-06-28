@@ -1,6 +1,6 @@
 #!/bin/bash
 
-INTERVAL=${1:-60}
+INTERVAL=${1:-300}
 
 while true
 do
