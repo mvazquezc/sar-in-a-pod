@@ -49,5 +49,7 @@ spec:
       - name: sar
         imagePullPolicy: Always
         image: quay.io/mavazque/sar:latest
+#        args:
+#        - "60"
         securityContext:
           runAsUser: 0
